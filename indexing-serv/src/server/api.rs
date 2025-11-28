@@ -3,7 +3,7 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-use alloy::providers::{Provider, ProviderBuilder};
+use alloy::providers::ProviderBuilder;
 use eyre::Result;
 use std::net::SocketAddr;
 use tower_http::cors::{CorsLayer, Any};
@@ -11,8 +11,12 @@ use std::str::FromStr;
 use alloy::primitives::{Address, U256};
 use alloy::signers::local::PrivateKeySigner;
 use crate::server::indexer::run_indexer;
-use crate::models::models::{AppState, Config, TransactionFilters, TransactionModel, SendRequest};
-use tracing::{info, error};
+use crate::models::models::{
+    AppState, 
+    Config, 
+    TransactionFilters, 
+    TransactionModel,
+    SendRequest};
 
 pub async fn run(app_state: AppState, app_config: Config) -> Result<()> {
     let repo_for_indexer = app_state.db_repo.clone();
@@ -31,32 +35,24 @@ pub async fn run(app_state: AppState, app_config: Config) -> Result<()> {
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));   
     let listener = tokio::net::TcpListener::bind(addr).await?;
     axum::serve(listener, app).await?;
-
     Ok(())
 }
-async fn get_transaction_by_hash(
-    State(state): State<AppState>,
-    Path(hash): Path<String>,
-) -> Result<Json<TransactionModel>, String> {
+#[axum::debug_handler]
+async fn get_transaction_by_hash(State(state): State<AppState>, Path(hash): Path<String>,) -> Result<Json<TransactionModel>, String> {
     match state.db_repo.get_transaction_by_hash(&hash).await {
         Ok(tx) => Ok(Json(tx)),
         Err(e) => Err(format!("Transaction not found: {}", e)),
     }
 }
-async fn get_transactions(
-    State(state): State<AppState>,
-    Query(filters): Query<TransactionFilters>,
-) -> Result<Json<Vec<TransactionModel>>, String> {
+#[axum::debug_handler]
+async fn get_transactions(State(state): State<AppState>, Query(filters): Query<TransactionFilters>,) -> Result<Json<Vec<TransactionModel>>, String> {
     match state.db_repo.get_transactions(filters).await {
         Ok(txs) => Ok(Json(txs)),
         Err(e) => Err(format!("Failed to get transactions: {}", e)),
     }
 }
 #[axum::debug_handler]
-async fn send_transaction(
-    State(state): State<AppState>,
-    Json(payload): Json<SendRequest>,
-) -> Result<Json<String>, String> {
+async fn send_transaction(State(state): State<AppState>, Json(payload): Json<SendRequest>,) -> Result<Json<String>, String> {
     let to_addr = Address::from_str(&payload.to_address).map_err(|e| format!("Invalid 'to_address': {}", e))?;
     let amount = U256::from_str(&payload.amount_raw).map_err(|e| format!("Invalid 'amount_raw': {}", e))?;
     let _signer = PrivateKeySigner::from_str(&state.config.private_key).map_err(|e| format!("Invalid PRIVATE_KEY: {}", e))?;

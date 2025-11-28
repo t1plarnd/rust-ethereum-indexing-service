@@ -1,4 +1,8 @@
-use alloy::primitives::{b256, Address, FixedBytes, U256};
+use alloy::primitives::{
+    b256, 
+    Address, 
+    FixedBytes, 
+    U256};
 use alloy::providers::Provider;
 use alloy::rpc::types::{Filter, Log};
 use tokio::time::{sleep, Duration};
@@ -96,7 +100,6 @@ pub async fn run_indexer(
         sleep(Duration::from_secs(1)).await;
     }
 }
-
 async fn process_log(log: Log, block_time: i64, db_repo: Arc<dyn DbRepository>) -> Result<(), String> {
     if log.topics().len() != 3 {
         return Err(format!("Invalid log topics length for tx: {}", log.transaction_hash.unwrap_or_default()));
@@ -117,7 +120,6 @@ async fn process_log(log: Log, block_time: i64, db_repo: Arc<dyn DbRepository>) 
     db_repo.insert_transaction(&tx_model).await
         .map_err(|e| e.to_string())
 }
-
 fn decode_address_from_topic(topic: FixedBytes<32>) -> Address {
     Address::from_slice(&topic[12..32])
 }

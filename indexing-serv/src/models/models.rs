@@ -5,7 +5,6 @@ use crate::server::db::DbRepository;
 use dotenv::dotenv;
 use eyre::Result;
 use std::env;
-use tracing::{info, error};
 
 #[derive(Debug, Clone)]
 pub struct Config {

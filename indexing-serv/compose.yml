@@ -11,7 +11,6 @@ services:
     depends_on:
       - app 
     restart: unless-stopped
-
   db:
     image: postgres:15-alpine
     container_name: my_indexer_db
@@ -28,7 +27,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
   app:
     build:
       context: .

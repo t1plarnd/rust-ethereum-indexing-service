@@ -17,10 +17,9 @@ async fn main() -> Result<()> {
         .connect(&app_config.database_url)
         .await?;
     match sqlx::migrate!().run(&pool).await {
-        Ok(_) =>,
+        Ok(_) => info!("Migrations applied successfully."),
         Err(e) => {
             error!("Migration error: {}", e);
-            error!("Try running: docker-compose down --volumes && docker-compose up");
             std::process::exit(1);
         }
     }
@@ -31,6 +30,5 @@ async fn main() -> Result<()> {
         config: Arc::new(app_config.clone())
     };
     run(app_state, app_config).await?;
-
     Ok(())
 }
