@@ -11,7 +11,6 @@ pub struct Config {
     pub mainnet_rpc_url: String,
     pub usdc_contract_address: String,
     pub start_block: Option<u64>,
-    pub testnet_rpc_url: String,
     pub testnet_usdc_address: String,
     pub private_key: String,
     pub database_url: String, 
@@ -21,7 +20,6 @@ impl Config {
         dotenv().ok();
         let mainnet_rpc_url = env::var("MAINNET_RPC_URL")?;
         let usdc_contract_address = env::var("USDC_CONTRACT_ADDRESS")?;
-        let testnet_rpc_url = env::var("TESTNET_RPC_URL")?;
         let testnet_usdc_address = env::var("TESTNET_USDC_ADDRESS")?;
         let private_key = env::var("PRIVATE_KEY")
             .map_err(|e| eyre::eyre!("PRIVATE_KEY not set: {}", e))?;
@@ -31,7 +29,6 @@ impl Config {
             mainnet_rpc_url,
             usdc_contract_address,
             start_block,
-            testnet_rpc_url,
             testnet_usdc_address,
             private_key,
             database_url,

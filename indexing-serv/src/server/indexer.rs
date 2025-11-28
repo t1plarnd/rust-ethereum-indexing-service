@@ -11,7 +11,7 @@ use std::cmp::{max, min};
 use std::str::FromStr;
 use crate::server::db::DbRepository;
 use crate::models::models::{TransactionModel, Config};
-use tracing::{info, error};
+use tracing::error;
 
 const TRANSFER_EVENT_TOPIC: FixedBytes<32> = b256!("ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef");
 const BATCH_SIZE: u64 = 100;
